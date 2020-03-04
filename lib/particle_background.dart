@@ -3,16 +3,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 
+
+
 class ParticleBackgroundApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       Positioned.fill(child: AnimatedBackground()),
-      Positioned.fill(child: Particles(10)),
+      Positioned.fill(child: Particles(20)),
 //      Positioned.fill(child: CenteredText()),
     ]);
   }
 }
+
 
 class Particles extends StatefulWidget {
   final int numberOfParticles;
@@ -31,7 +34,7 @@ class _ParticlesState extends State<Particles> {
   @override
   void initState() {
     List.generate(widget.numberOfParticles, (index) {
-      particles.add(ParticleModel(random,index==0));
+      particles.add(ParticleModel(random,index==0?ParticleState.VIRUS:ParticleState.NORMAL));
     });
     super.initState();
   }
@@ -59,7 +62,7 @@ class _ParticlesState extends State<Particles> {
   _hitParticle(Offset tapPosition) {
     particles.forEach((particle)=>{
       if(circleTap(particle.position.dx, particle.position.dy, tapPosition.dx, tapPosition.dy, particle.calculatedSize)>=0){
-        particle.virus=false
+        particle.state=ParticleState.CURED
       }
     });
   }
@@ -79,16 +82,31 @@ class _ParticlesState extends State<Particles> {
   }
 }
 
+
 class ParticleModel {
   Animatable tween;
   double size;
   AnimationProgress animationProgress;
   Random random;
-  bool virus;
   Offset position;
   double calculatedSize;
+  ParticleState state;
 
-  ParticleModel(this.random,this.virus) {
+
+
+  isVirus(){
+    return this.state==ParticleState.VIRUS;
+  }
+
+  isNormal(){
+    return this.state==ParticleState.NORMAL;
+  }
+
+  isCured(){
+    return this.state==ParticleState.CURED;
+  }
+
+  ParticleModel(this.random,this.state) {
     restart();
   }
 
@@ -111,7 +129,7 @@ class ParticleModel {
 
   maintainRestart(Duration time,bool virus) {
     if (animationProgress.progress(time) == 1.0) {
-      this.virus=virus;
+      this.state=virus?ParticleState.VIRUS:ParticleState.NORMAL;
       restart(time: time);
     }
   }
@@ -136,17 +154,19 @@ class ParticlePainter extends CustomPainter {
       particle.position=position;
       particle.calculatedSize=size.width*0.2*particle.size;
 
-      if(particle.virus){
+      if(particle.isVirus()){
         particles.forEach((mParticle){
-            if(!mParticle.virus && mParticle.position!=null){
+            if(mParticle.isNormal() && mParticle.position!=null){
               if(checkCollision(particle,mParticle)>=0){
-                  mParticle.virus=true;
+                  mParticle.state=ParticleState.VIRUS;
               }
             }
         });
       }
-
-      canvas.drawCircle(position, particle.calculatedSize, particle.virus?viruspaint:paint);
+      if(!particle.isCured()) {
+        canvas.drawCircle(position, particle.calculatedSize,
+            particle.isVirus() ? viruspaint : paint);
+      }
     });
   }
 
@@ -215,5 +235,11 @@ class CenteredText extends StatelessWidget {
       textScaleFactor: 4,
     ));
   }
+}
+
+enum ParticleState {
+  NORMAL,
+  VIRUS,
+  CURED
 }
 
