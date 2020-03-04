@@ -42,7 +42,7 @@ class _ParticlesState extends State<Particles> {
   @override
   Widget build(BuildContext context) {
     return Rendering(
-      startTime: Duration(seconds: 30),
+      startTime: Duration(seconds: 20),
       onTick: _simulateParticles,
       builder: (context, time) {
         return
@@ -113,7 +113,7 @@ class ParticleModel {
   restart({Duration time = Duration.zero}) {
     final startPosition = Offset(-0.2 + 1.4 * random.nextDouble(), 1.2);
     final endPosition = Offset(-0.2 + 1.4 * random.nextDouble(), -0.2);
-    final duration = Duration(milliseconds:10000 + random.nextInt(6000));
+    final duration = Duration(milliseconds:7000 + random.nextInt(6000));
 
     tween = MultiTrackTween([
       Track("x").add(
