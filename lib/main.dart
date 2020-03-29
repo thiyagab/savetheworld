@@ -1,15 +1,36 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:simple_animations_example_app/widgets/homescreen.dart';
+import 'package:simple_animations_example_app/particle_background.dart';
+import 'package:firebase/firebase.dart';
+import 'package:simple_animations_example_app/widgets/testscreen.dart';
 
-void main() => runApp(SimpleAnimationsExampleApp());
+void main() {
+  if (apps==null || apps.isEmpty) {
+    initializeApp(
+        apiKey: "AIzaSyCtJuYTWGby_AZWjKuWVGRXqlJgMOwxIbA",
+        authDomain: "kill-corona-virus.firebaseapp.com",
+        databaseURL: "https://kill-corona-virus.firebaseio.com",
+        projectId: "kill-corona-virus",
+        storageBucket: "kill-corona-virus.appspot.com",
+        messagingSenderId: "659058448757"
+    );
+  }
+  runApp(HomeScreen());
+}
 
-class SimpleAnimationsExampleApp extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
+
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Save the world from virus",
-      home: Homescreen(),
+      title: "Kill the virus",
+      home: ParticleBackgroundApp(),
       theme: _theme(),
     );
   }
